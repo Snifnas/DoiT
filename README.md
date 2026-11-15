@@ -27,13 +27,13 @@ Vite, React, TypeScript, Supabase Auth/Postgres/Storage with RLS, Vercel and Git
 ## Database
 Migrations are tracked in `supabase/migrations` and have been applied to the connected Supabase project. DoiT tables are prefixed `doit_`; helper functions are in the `doit_private` schema. The `doit-photos` storage bucket is private.
 
-**Temporary integration note:** The current deployment uses an isolated `doit_` namespace and bucket inside an existing Supabase project because the dedicated $0/month project requires a separate cost-confirmation approval. Auth users are shared with the existing project. Before inviting outside users, allocate a dedicated project, add the app URL to Auth redirect allowlists, apply the DoiT migrations, and update Vercel env variables. Do not delete users from the shared auth project.
+**Dedicated infrastructure:** DoiT uses its own Supabase project (`plnlufbydxhgehwmoezi`) in London, with independent authentication, tables, RLS and private photo storage. All 256 starter quests are seeded there. Vercel production, preview and development settings target this project. For email confirmation links, verify that `https://doit-flame.vercel.app` is configured as the Supabase Auth site URL and allowed redirect. New accounts must be created inside this project; existing accounts from unrelated Supabase projects are not migrated.
 
 ## Privacy and verification
 Photo proof is trust-based. Uploads are re-encoded to JPEG without original EXIF metadata. Supabase RLS restricts group content; server-side logic awards XP and prevents same-day duplicate XP for the same quest. Signed image links are short-lived.
 
 ## Current limitations
-- Authentication email confirmation redirects may depend on the shared project's redirect allowlist.
+- Email confirmation links require the dedicated project's Auth site URL and redirect allowlist to include the production domain.
 - No offline submission queue or push notifications.
-- Account deletion is intentionally not automated while Auth is shared with another app.
+- Self-service account deletion is not implemented yet.
 - End-to-end UI testing requires a real signed-in browser session.
